@@ -1,4 +1,5 @@
-== carousel-plugin ==
+carousel-plugin
+===============
 
 A jQuery plugin with an unimaginative name.
 
