@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Carousel test</title>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="carousel-plugin.js"></script>
+
+	<style type="text/css">
+	a img {
+		border: 0;
+	}
+	/*Normal carousel CSS*/
+	div.carousel {
+		width: 300px;
+		height: 150px;
+		overflow: hidden;
+	}
+
+	div.carousel .wrapper {
+		height: 150px;
+		overflow: hidden;
+	}
+
+	.carousel a#prev, .carousel a#next {
+		display: block;
+		height: 100%;
+		background-color: #F1F8C7;
+		width: 20px; }
+	.carousel #prev { float: left;}
+	.carousel #next { float: right;}
+	.carousel a#next.inactive, .carousel a#prev.inactive {
+		background-color: #a088a1;
+	}
+	.carousel .wrapper ul { 
+		overflow: hidden;
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		width: 100000%;
+	}
+	.carousel .wrapper li {
+		width: 260px;
+		height: 150px;
+		display: block;
+		margin: 0;
+		padding: 0;
+		background-color: pink;
+		position: relative;
+		float: left;
+	}
+
+	.carousel .breadcrumbs { 
+		height: 20px;
+		position: relative;
+		top: -20px;
+	}
+	</style>
+	<script type="text/javascript">
+	$(document).ready(function() {
+		// init the carousel.
+		// You can just call the carousel function. It will attempt to
+		// initialize the carousel with sane defaults. If you want other
+		// settings, just specify them: 
+		// 	$("#carousel").carousel({duration: 500});
+
+		$("#carousel").carousel();
+
+
+		// Example: make the breadcrumbs work
+		$("#carousel ul").change(function() {
+			$("#carousel div.breadcrumbs").text("Page " + $("#carousel").carousel("current_page"))
+		}).change()
+		$("#fade_carousel").carousel({mode: "vslide", duration: 2000, timer: 10000, easing:"easeOutElastic", loop_pages: false})
+		
+		$("#fade_carousel ul").change(function() {
+			$("#fade_carousel div.breadcrumbs").text("Page " + $("#carousel").carousel("current_page"))
+			if ($("#fade_carousel").carousel("has_next") != false) {
+				$("#fade_carousel #next").removeClass("inactive")
+			} else {
+				$("#fade_carousel #next").addClass("inactive")
+			}
+
+			if ($("#fade_carousel").carousel("has_prev") != false) {
+				$("#fade_carousel #prev").removeClass("inactive")
+			} else {
+				$("#fade_carousel #prev").addClass("inactive")
+			}
+		}).change()
+
+
+		// Example: adding a timer
+	})
+	</script>
+</head>
+<body>
+<div id="carousel" class="carousel">
+	<a href="#" id="prev"></a>
+	<a href="#" id="next"></a>
+	<div class="wrapper">
+		<ul>
+			<li class="active_page">
+				<div>One</div>
+			</li>
+			<li>
+				<div>Two</div>
+			</li>
+			<li>
+				<div>Three</div>
+			</li>
+			<li>
+				<div>Four</div>
+			</li>
+			<li>
+				<div>Five</div>
+			</li>
+			<li>
+				<div>Six</div>
+			</li>
+		</ul>
+	</div>
+	<div class="breadcrumbs">
+		Test
+	</div>
+</div>
+
+<div id="fade_carousel" class="carousel">
+	<a href="#" id="prev"></a>
+	<a href="#" id="next"></a>
+	<div class="wrapper">
+		<ul>
+			<li class="active_page">
+				<div> <img src="http://placekitten.com/260/200" alt=""> </div>
+			</li>
+			<li>
+				<div><img src="http://placekitten.com/261/200" alt=""></div>
+			</li>
+			<li>
+				<div><img src="http://placekitten.com/262/200" alt=""></div>
+			</li>
+			<li>
+				<div><img src="http://placekitten.com/263/200" alt=""></div>
+			</li>
+			<li>
+				<div><img src="http://placekitten.com/264/200" alt=""></div>
+			</li>
+			<li>
+				<div><img src="http://placekitten.com/265/200" alt=""></div>
+			</li>
+		</ul>
+	</div>
+	<div class="breadcrumbs">
+		Image
+	</div>
+</div>
+
+</body>
+</html>
