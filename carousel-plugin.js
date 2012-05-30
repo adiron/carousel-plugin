@@ -1,5 +1,6 @@
 // carousel-plugin.js
-// version 1.0
+// version 1.1
+
 
 (function($) {
 
@@ -50,16 +51,27 @@
 		},
 
 		next_page : function() {
-			if ($(this).carousel("current_page") == $(".wrapper > ul > li", this).length) {
-				// if maxed out
-				if ($(this).data("carousel__loop_pages")) {
-					$(this).carousel("go_to", 1)
-				}				
+			if ($(this).data("carousel__randomize")) {
+				// Get a random page. If this is the current page, try again.
+				var num_pages = $(".wrapper > ul > li", this).length
+				var rnd = num_pages
+				while (rnd == $(this).carousel("current_page")) {
+					rnd = Math.floor(Math.random()*num_pages)+1 
+				}
+				$(this).carousel("go_to", rnd)
 			} else {
-				// Go to the next page:
-				$(this).carousel("go_to", $(this).carousel("current_page")+1)
+				if ($(this).carousel("current_page") == $(".wrapper > ul > li", this).length) {
+					// if maxed out
+					if ($(this).data("carousel__loop_pages")) {
+						$(this).carousel("go_to", 1)
+					}				
+				} else {
+					// Go to the next page:
+					$(this).carousel("go_to", $(this).carousel("current_page")+1)
+				}
 			}
-			return this;
+
+			return this;			
 		},
 
 		prev_page : function() {
@@ -133,16 +145,18 @@
 		init : function(opts) {
 			var settings = $.extend( {
 				'duration'	: 2000,
-				'easing'	: "easeOutExpo",
+				'easing'	: undefined,
 				'mode'		: "slide", // options: slide, fade
 				'bindlinks'	: true, // whether we want to bind links or not
 				'timer'		: false, // set a timer if we want one
 				'loop_pages': true, // whether to loop the pages
+				'randomize' : false // whether to randomize the next_page method
 			}, opts)
 			this.data("carousel__duration", settings.duration)
 			this.data("carousel__easing", settings.easing)
 			this.data("carousel__loop_pages", settings.loop_pages)
 			this.data("carousel__mode", settings.mode)
+			this.data("carousel__randomize", settings.randomize)
 			$.each($(".wrapper > ul > li", this), function(idx, elm) {
 				$(elm).attr("rel", idx+1);
 			})
@@ -158,7 +172,7 @@
 				case "vslide":
 					this.data("carousel__slideheight",
 						parseInt($(".wrapper > ul > li:eq(0)", this).css("height")))
-					$(".wrapper > ul > li", this).css({float: "none"})
+					$(".wrapper > ul > li", this).css({"float": "none"})
 					break;
 				default:
 					$.error("Unknown slide mode: \'" + settings.mode + "\'" )
@@ -173,17 +187,17 @@
 			}
 
 			if (settings.bindlinks) {
-				// bind #prev/next links if any
-				if ($("> #prev", this).length > 0) {
-					$("> #prev", this).click(
+				// bind .prev/next links if any
+				if ($("> .prev", this).length > 0) {
+					$("> .prev", this).click(
 						function() {$(this).parent("div").carousel("prev_page")
 					})
-				}
-				if ($("> #next", this).length > 0) {
-					$("> #next", this).click(
+				} else { console.log("Cannot bind next (not found)") }
+				if ($("> .next", this).length > 0) {
+					$("> .next", this).click(
 						function() {$(this).parent("div").carousel("next_page")
 					})
-				}
+				} else { console.log("Cannot bind next (not found)") }
 			}
 			return this; // for chaining.
 		}
@@ -195,7 +209,7 @@
 		} else if ( typeof method === 'object' || ! method ) {
 			return methods.init.apply( this, arguments );
 		} else {
-			$.error( 'Method ' +  method + ' does not exist on jQuery.carousel' );
+			$.error( 'Method ' +  method + ' does not exist in jQuery.carousel' );
 		}
 
 	// end plugin
