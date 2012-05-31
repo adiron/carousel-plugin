@@ -186,6 +186,10 @@
 				this.carousel("start_timer")
 			}
 
+			if ($(".active_page", this).length == 0) {
+				$(".wrapper > ul > li:eq(0)", this).addClass("active_page")
+			}
+
 			if (settings.bindlinks) {
 				// bind .prev/next links if any
 				if ($("> .prev", this).length > 0) {
