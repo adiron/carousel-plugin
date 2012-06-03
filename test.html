@@ -71,7 +71,12 @@
 		$("#carousel ul").change(function() {
 			$("#carousel div.breadcrumbs").text("Page " + $("#carousel").carousel("current_page"))
 		}).change()
-		$("#fade_carousel").carousel({mode: "vslide", duration: 2000, timer: 10000, easing:"easeOutElastic", loop_pages: false})
+		$("#fade_carousel").carousel({
+			"mode": "vslide",
+			"duration": 2000,
+			"timer": 10000,
+			"easing": "easeOutElastic",
+			"loop_pages": false})
 		
 		$("#fade_carousel ul").change(function() {
 			$("#fade_carousel div.breadcrumbs").text("Page " + $("#carousel").carousel("current_page"))
