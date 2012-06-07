@@ -5,6 +5,7 @@
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="carousel-plugin.js"></script>
+	<script type="text/javascript" src="http://ricostacruz.com/jquery.transit/jquery.transit.min.js"></script>
 
 	<style type="text/css">
 	a img {
@@ -22,14 +23,14 @@
 		overflow: hidden;
 	}
 
-	.carousel a#prev, .carousel a#next {
+	.carousel a.prev, .carousel a.next {
 		display: block;
 		height: 100%;
 		background-color: #F1F8C7;
 		width: 20px; }
-	.carousel #prev { float: left;}
-	.carousel #next { float: right;}
-	.carousel a#next.inactive, .carousel a#prev.inactive {
+	.carousel .prev { float: left;}
+	.carousel .next { float: right;}
+	.carousel a.next.inactive, .carousel a.prev.inactive {
 		background-color: #a088a1;
 	}
 	.carousel .wrapper ul { 
@@ -64,7 +65,7 @@
 		// settings, just specify them: 
 		// 	$("#carousel").carousel({duration: 500});
 
-		$("#carousel").carousel();
+		$("#carousel").carousel({"ring": true});
 
 
 		// Example: make the breadcrumbs work
@@ -72,24 +73,24 @@
 			$("#carousel div.breadcrumbs").text("Page " + $("#carousel").carousel("current_page"))
 		}).change()
 		$("#fade_carousel").carousel({
-			"mode": "vslide",
+			"mode": "card",
 			"duration": 2000,
-			"timer": 10000,
-			"easing": "easeOutElastic",
+			// "timer": 10000,
+			"easing": "linear",
 			"loop_pages": false})
 		
 		$("#fade_carousel ul").change(function() {
 			$("#fade_carousel div.breadcrumbs").text("Page " + $("#carousel").carousel("current_page"))
 			if ($("#fade_carousel").carousel("has_next") != false) {
-				$("#fade_carousel #next").removeClass("inactive")
+				$("#fade_carousel .next").removeClass("inactive")
 			} else {
-				$("#fade_carousel #next").addClass("inactive")
+				$("#fade_carousel .next").addClass("inactive")
 			}
 
 			if ($("#fade_carousel").carousel("has_prev") != false) {
-				$("#fade_carousel #prev").removeClass("inactive")
+				$("#fade_carousel .prev").removeClass("inactive")
 			} else {
-				$("#fade_carousel #prev").addClass("inactive")
+				$("#fade_carousel .prev").addClass("inactive")
 			}
 		}).change()
 
@@ -100,8 +101,8 @@
 </head>
 <body>
 <div id="carousel" class="carousel">
-	<a href="#" id="prev"></a>
-	<a href="#" id="next"></a>
+	<a href="#" class="prev"></a>
+	<a href="#" class="next"></a>
 	<div class="wrapper">
 		<ul>
 			<li class="active_page">
@@ -130,8 +131,8 @@
 </div>
 
 <div id="fade_carousel" class="carousel">
-	<a href="#" id="prev"></a>
-	<a href="#" id="next"></a>
+	<a href="#" class="prev"></a>
+	<a href="#" class="next"></a>
 	<div class="wrapper">
 		<ul>
 			<li class="active_page">

@@ -1,52 +1,84 @@
 // carousel-plugin.js
-// version 1.1
+// version 1.2
 
 
 (function($) {
 
 	var methods = {
 		go_to : function(page) {
-			if (this.data("carousel__mode") == "fade") {
-				// if this is a fade carousel
 
-				// Everything other than the target page and the source page:
-				$(".wrapper > ul > li:not([rel=" + page + "]):not(.active_page)", this)
-					.css({"z-index": -2})
-				// The source page:
-				$(".wrapper > ul > li.active_page", this).removeClass("active_page")
-					.css({"z-index": 0})
-					.stop()
-					.animate(
-						{opacity: 0},
-						{duration: this.data("carousel__duration"),
-						easing: this.data("carousel__easing"), queue: false});
-				// The target page:
-				$(".wrapper > ul > li[rel=" + page + "]", this).addClass("active_page")
-					.css({"z-index": -1, opacity: 1})
-				$(".wrapper > ul", this).change() // Trigger change.
-				
-			} else if (this.data("carousel__mode") == "slide") {
-				// normal slide carousel
-				$(".wrapper > ul > li.active_page", this).removeClass("active_page");
-				$(".wrapper > ul > li[rel=" + page + "]", this).addClass("active_page");
-				$(".wrapper > ul", this)
-					.stop()
-					.animate(
-						{"margin-left":
-							-1 * (page-1)* this.data("carousel__slidewidth")},
+			switch(this.data("carousel__mode")) {
+				case "fade":
+					// if this is a fade carousel
+
+					// Everything other than the target page and the source page:
+					$(".wrapper > ul > li:not([rel=" + page + "]):not(.active_page)", this)
+						.css({"z-index": -2})
+					// The source page:
+					$(".wrapper > ul > li.active_page", this).removeClass("active_page")
+						.css({"z-index": 0})
+						.stop()
+						.animate(
+							{opacity: 0},
+							{duration: this.data("carousel__duration"),
+							easing: this.data("carousel__easing"), queue: false});
+					// The target page:
+					$(".wrapper > ul > li[rel=" + page + "]", this).addClass("active_page")
+						.css({"z-index": -1, opacity: 1})
+					$(".wrapper > ul", this).change() // Trigger change.
+					break
+				case "slide":
+					$(".wrapper > ul > li.active_page", this).removeClass("active_page");
+					$(".wrapper > ul > li[rel=" + page + "]", this).addClass("active_page");
+					$(".wrapper > ul", this)
+						.stop()
+						.animate(
+							{"margin-left":
+								-1 * (page-1)* this.data("carousel__slidewidth")},
+							{duration: this.data("carousel__duration"),
+							easing: this.data("carousel__easing"), queue: false}
+					).change()
+					break;
+				case "vslide":
+					$(".wrapper > ul > li.active_page", this).removeClass("active_page");
+					$(".wrapper > ul > li[rel=" + page + "]", this).addClass("active_page");
+					$(".wrapper > ul", this).stop().animate(
+						{"margin-top":
+							-1 * (page-1)* this.data("carousel__slideheight")},
 						{duration: this.data("carousel__duration"),
 						easing: this.data("carousel__easing"), queue: false}
-				).change()				
-			} else if (this.data("carousel__mode") == "vslide") {
-				$(".wrapper > ul > li.active_page", this).removeClass("active_page");
-				$(".wrapper > ul > li[rel=" + page + "]", this).addClass("active_page");
-				$(".wrapper > ul", this).stop().animate(
-					{"margin-top":
-						-1 * (page-1)* this.data("carousel__slideheight")},
-					{duration: this.data("carousel__duration"),
-					easing: this.data("carousel__easing"), queue: false}
-				).change()
+					).change()
+					break;
+
+				case "card":
+					// if this is a fade carousel
+
+					// Everything other than the target page:
+					var carousel = this
+					$(".wrapper", this).transition(
+						{"rotateY" : "90deg"},
+						this.data("carousel__duration"), // duration
+						this.data("carousel__easing"), // easing
+						function() { // callback
+							// when we're done folding out of view.
+							$(".wrapper > ul > li.active_page", carousel)
+								.removeClass("active_page")
+								.css({"opacity": 0})
+							$(".wrapper > ul > li[rel=" + page + "]", carousel)
+								.addClass("active_page")
+								.css({"opacity": 1})
+							// now we fold back out
+							$(".wrapper", carousel).transition(
+								{"rotateY" : "0deg"},
+								carousel.data("carousel__duration"),
+								carousel.data("carousel__easing")
+							)
+							$(".wrapper > ul", carousel).change() // Trigger change.
+						})
+					break
+
 			}
+
 			return this;
 		},
 
@@ -150,13 +182,14 @@
 				'bindlinks'	: true, // whether we want to bind links or not
 				'timer'		: false, // set a timer if we want one
 				'loop_pages': true, // whether to loop the pages
-				'randomize' : false // whether to randomize the next_page method
+				'randomize' : false, // whether to randomize the next_page method
 			}, opts)
 			this.data("carousel__duration", settings.duration)
 			this.data("carousel__easing", settings.easing)
 			this.data("carousel__loop_pages", settings.loop_pages)
 			this.data("carousel__mode", settings.mode)
 			this.data("carousel__randomize", settings.randomize)
+
 			$.each($(".wrapper > ul > li", this), function(idx, elm) {
 				$(elm).attr("rel", idx+1);
 			})
@@ -174,8 +207,21 @@
 						parseInt($(".wrapper > ul > li:eq(0)", this).css("height")))
 					$(".wrapper > ul > li", this).css({"float": "none"})
 					break;
+				case "card":
+					if ($.fn.transit) {
+						$("li:not(.active_page)", this).css({"opacity":0})
+						this.carousel("stack")
+					} else {
+						$.error("Cannot spawn carousel in card mode: requires transit plugin.")
+					}
+					break;
+
 				default:
-					$.error("Unknown slide mode: \'" + settings.mode + "\'" )
+					$.error("Unknown slide mode: \'" + settings.mode + "\'. Defaulting to slide." )
+					settings.mode = "slide"
+					this.data("carousel__slidewidth",
+						parseInt($(".wrapper > ul > li:eq(0)", this).css("width"))) 
+
 					break
 					
 			}
