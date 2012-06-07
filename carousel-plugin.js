@@ -55,26 +55,28 @@
 
 					// Everything other than the target page:
 					var carousel = this
-					$(".wrapper", this).transition(
-						{"rotateY" : "90deg"},
-						this.data("carousel__duration"), // duration
-						this.data("carousel__easing"), // easing
-						function() { // callback
-							// when we're done folding out of view.
-							$(".wrapper > ul > li.active_page", carousel)
-								.removeClass("active_page")
-								.css({"opacity": 0})
-							$(".wrapper > ul > li[rel=" + page + "]", carousel)
-								.addClass("active_page")
-								.css({"opacity": 1})
-							// now we fold back out
-							$(".wrapper", carousel).transition(
-								{"rotateY" : "0deg"},
-								carousel.data("carousel__duration"),
-								carousel.data("carousel__easing")
-							)
-							$(".wrapper > ul", carousel).change() // Trigger change.
-						})
+					$(".wrapper", this)
+						.transition(
+							{"rotateY" : "90deg"},
+							this.data("carousel__duration"), // duration
+							this.data("carousel__easing"), // easing
+							function() { // callback
+								// when we're done folding out of view.
+								$(".wrapper > ul > li.active_page", carousel)
+									.removeClass("active_page")
+									.css({"opacity": 0})
+								$(".wrapper > ul > li[rel=" + page + "]", carousel)
+									.addClass("active_page")
+									.css({"opacity": 1})
+								// now we fold back out
+								$(".wrapper", carousel)
+									.transition(
+										{"rotateY" : "0deg"},
+										carousel.data("carousel__duration"),
+										carousel.data("carousel__easing")
+									)
+								$(".wrapper > ul", carousel).change() // Trigger change.
+							})
 					break
 
 			}
@@ -209,21 +211,21 @@
 					break;
 				case "card":
 					if ($.fn.transit) {
+						// If we have transit loaded.
 						$("li:not(.active_page)", this).css({"opacity":0})
 						this.carousel("stack")
 					} else {
-						$.error("Cannot spawn carousel in card mode: requires transit plugin.")
+						console.log("Cannot spawn carousel in card mode: requires jquery-transit to be loaded. Falling back to fade.")
+						this.data("carousel__mode", "fade")
+						this.carousel("stack")
 					}
-					break;
-
+					break
 				default:
 					$.error("Unknown slide mode: \'" + settings.mode + "\'. Defaulting to slide." )
 					settings.mode = "slide"
 					this.data("carousel__slidewidth",
 						parseInt($(".wrapper > ul > li:eq(0)", this).css("width"))) 
 
-					break
-					
 			}
 
 

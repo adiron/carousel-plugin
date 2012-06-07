@@ -74,10 +74,10 @@
 		}).change()
 		$("#fade_carousel").carousel({
 			"mode": "card",
-			"duration": 2000,
+			"duration": 500,
 			// "timer": 10000,
 			"easing": "linear",
-			"loop_pages": false})
+			"loop_pages": true})
 		
 		$("#fade_carousel ul").change(function() {
 			$("#fade_carousel div.breadcrumbs").text("Page " + $("#carousel").carousel("current_page"))
