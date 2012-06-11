@@ -15,7 +15,7 @@
 					$(".wrapper > ul > li:not([rel=" + page + "]):not(.active_page)", this)
 						.css({"z-index": -2})
 					// The source page:
-					$(".wrapper > ul > li.active_page", this).removeClass("active_page")
+					this.carousel("get_active_page").removeClass("active_page")
 						.css({"z-index": 0})
 						.stop()
 						.animate(
@@ -23,7 +23,7 @@
 							{duration: this.data("carousel__duration"),
 							easing: this.data("carousel__easing"), queue: false});
 					// The target page:
-					$(".wrapper > ul > li[rel=" + page + "]", this).addClass("active_page")
+					this.carousel("get_page", page).addClass("active_page")
 						.css({"z-index": -1})
 						.stop()
 						.animate(
@@ -33,8 +33,8 @@
 					$(".wrapper > ul", this).change() // Trigger change.
 					break
 				case "slide":
-					$(".wrapper > ul > li.active_page", this).removeClass("active_page");
-					$(".wrapper > ul > li[rel=" + page + "]", this).addClass("active_page");
+					this.carousel("get_active_page").removeClass("active_page");
+					this.carousel("get_page", page).addClass("active_page");
 					$(".wrapper > ul", this)
 						.stop()
 						.animate(
@@ -45,8 +45,8 @@
 					).change()
 					break;
 				case "vslide":
-					$(".wrapper > ul > li.active_page", this).removeClass("active_page");
-					$(".wrapper > ul > li[rel=" + page + "]", this).addClass("active_page");
+					this.carousel("get_active_page").removeClass("active_page");
+					this.carousel("get_page", page).addClass("active_page");
 					$(".wrapper > ul", this).stop().animate(
 						{"margin-top":
 							-1 * (page-1)* this.data("carousel__slideheight")},
@@ -67,10 +67,10 @@
 							this.data("carousel__easing"), // easing
 							function() { // callback
 								// when we're done folding out of view.
-								$(".wrapper > ul > li.active_page", carousel)
+								$(carousel).carousel("get_active_page")
 									.removeClass("active_page")
 									.css({"opacity": 0})
-								$(".wrapper > ul > li[rel=" + page + "]", carousel)
+								$(carousel).carousel("get_page", page)
 									.addClass("active_page")
 									.css({"opacity": 1})
 								// now we fold back out
@@ -123,6 +123,14 @@
 				$(this).carousel("go_to", $(this).carousel("current_page")-1)
 			}
 			return this;
+		},
+
+		get_page : function(page) {
+			return $(".wrapper > ul > li[rel=" + page + "]", this)
+		},
+
+		get_active_page : function() {
+			return $(".wrapper > ul > li.active_page", this)
 		},
 
 		has_next : function() {
