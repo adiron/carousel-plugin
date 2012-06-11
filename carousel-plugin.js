@@ -24,7 +24,12 @@
 							easing: this.data("carousel__easing"), queue: false});
 					// The target page:
 					$(".wrapper > ul > li[rel=" + page + "]", this).addClass("active_page")
-						.css({"z-index": -1, opacity: 1})
+						.css({"z-index": -1})
+						.stop()
+						.animate(
+							{opacity: 1},
+							{duration: this.data("carousel__duration"),
+							easing: this.data("carousel__easing"), queue: false});
 					$(".wrapper > ul", this).change() // Trigger change.
 					break
 				case "slide":
