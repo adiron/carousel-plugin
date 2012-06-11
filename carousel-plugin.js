@@ -176,7 +176,7 @@
 			var left_pos = $(".wrapper > ul > li:eq(0)", this).offset().left
 			$.each($(".wrapper > ul > li", this)
 				.filter(":not(.active_page)"), function(idx, elm) {
-				$(elm).offset({"top": top_pos, "left": left_pos }).css({"z-index": -1})
+				$(elm).offset({"top": top_pos, "left": left_pos }).css({"z-index": -1, "opacity": 0})
 			})
 			return this;
 		},
