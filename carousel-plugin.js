@@ -62,7 +62,7 @@
 					var carousel = this
 					$(".wrapper", this)
 						.transition(
-							{"rotateY" : "90deg"},
+							{"perspective": carousel.data("carousel__perspective"), "rotateY" : "90deg"},
 							this.data("carousel__duration"), // duration
 							this.data("carousel__easing"), // easing
 							function() { // callback
@@ -75,10 +75,12 @@
 									.css({"opacity": 1})
 								// now we fold back out
 								$(".wrapper", carousel)
+									.css({"rotateY": "270deg"})
 									.transition(
-										{"rotateY" : "0deg"},
+										{"perspective": carousel.data("carousel__perspective"), "rotateY" : "360deg"},
 										carousel.data("carousel__duration"),
-										carousel.data("carousel__easing")
+										carousel.data("carousel__easing"),
+										function() {$(this).css({"rotateY": "0deg"})}
 									)
 								$(".wrapper > ul", carousel).change() // Trigger change.
 							})
@@ -198,12 +200,14 @@
 				'timer'		: false, // set a timer if we want one
 				'loop_pages': true, // whether to loop the pages
 				'randomize' : false, // whether to randomize the next_page method
+				'perspective': "500px" // perspective for card mode.
 			}, opts)
 			this.data("carousel__duration", settings.duration)
 			this.data("carousel__easing", settings.easing)
 			this.data("carousel__loop_pages", settings.loop_pages)
 			this.data("carousel__mode", settings.mode)
 			this.data("carousel__randomize", settings.randomize)
+			this.data("carousel__perspective", settings.perspective)			
 
 			$.each($(".wrapper > ul > li", this), function(idx, elm) {
 				$(elm).attr("rel", idx+1);
