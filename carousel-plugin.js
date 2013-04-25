@@ -1,6 +1,5 @@
 // carousel-plugin.js
-// version 1.2
-
+// version 1.3
 
 (function($) {
 
@@ -10,7 +9,6 @@
 			switch(this.data("carousel__mode")) {
 				case "fade":
 					// if this is a fade carousel
-
 					// Everything other than the target page and the source page:
 					$(".wrapper > ul > li:not([rel=" + page + "]):not(.active_page)", this)
 						.css({"z-index": -2})
@@ -94,32 +92,32 @@
 		next_page : function() {
 			if ($(this).data("carousel__randomize")) {
 				// Get a random page. If this is the current page, try again.
-				var num_pages = $(".wrapper > ul > li", this).length
+				var num_pages = $(this).data("carousel__pages")
 				var rnd = num_pages
 				while (rnd == $(this).carousel("current_page")) {
-					rnd = Math.floor(Math.random()*num_pages)+1 
+					rnd = Math.floor(Math.random()*num_pages)+1
 				}
 				$(this).carousel("go_to", rnd)
 			} else {
-				if ($(this).carousel("current_page") == $(".wrapper > ul > li", this).length) {
+				if ($(this).carousel("current_page") == $(this).data("carousel__pages")) {
 					// if maxed out
 					if ($(this).data("carousel__loop_pages")) {
 						$(this).carousel("go_to", 1)
-					}				
+					}
 				} else {
 					// Go to the next page:
 					$(this).carousel("go_to", $(this).carousel("current_page")+1)
 				}
 			}
 
-			return this;			
+			return this;
 		},
 
 		prev_page : function() {
 			if ($(this).carousel("current_page") == 1) {
 				// end of the line
 				if ($(this).data("carousel__loop_pages")) {
-					$(this).carousel("go_to", $(".wrapper > ul > li", this).length)
+					$(this).carousel("go_to", $(this).data("carousel__pages"))
 				}
 			} else {
 				$(this).carousel("go_to", $(this).carousel("current_page")-1)
@@ -136,7 +134,7 @@
 		},
 
 		has_next : function() {
-			if ($(this).carousel("current_page") == $(".wrapper > ul > li", this).length) {
+			if ($(this).carousel("current_page") == $(this).data("carousel__pages")) {
 				// if maxed out
 				if ($(this).data("carousel__loop_pages")) {
 					return 1
@@ -151,7 +149,7 @@
 			if ($(this).carousel("current_page") == 1) {
 				// end of the line
 				if ($(this).data("carousel__loop_pages")) {
-					return $(".wrapper > ul > li", this).length
+					return $(this).data("carousel__pages")
 				} else { return false }
 			} else {
 				return $(this).carousel("current_page")-1
@@ -163,13 +161,13 @@
 		},
 
 		stop_timer : function() {
-			$(this).data("carousel__timer").clearInterval()
+			clearInterval($(this).data("carousel__timerobj"))
 			return this;
 		},
 
 		start_timer : function() {
 			var that = this
-			this.data("carousel__timerobj", 
+			this.data("carousel__timerobj",
 				setInterval(function() {
 					$(that).carousel("next_page")
 				} , this.data("carousel__timer")))
@@ -181,7 +179,7 @@
 			return this;
 		},
 
-		stack : function() { // make lis stack on top of each other.
+		stack : function() { // make <li>s stack on top of each other.
 			var top_pos = $(".wrapper > ul > li:eq(0)", this).offset().top
 			var left_pos = $(".wrapper > ul > li:eq(0)", this).offset().left
 			$.each($(".wrapper > ul > li", this)
@@ -195,23 +193,36 @@
 			var settings = $.extend( {
 				'duration'	: 2000,
 				'easing'	: undefined,
-				'mode'		: "slide", // options: slide, fade
-				'bindlinks'	: true, // whether we want to bind links or not
-				'timer'		: false, // set a timer if we want one
-				'loop_pages': true, // whether to loop the pages
-				'randomize' : false, // whether to randomize the next_page method
-				'perspective': "500px" // perspective for card mode.
+				'mode'		: "slide", 	// options: slide, fade
+				'bindlinks'	: true, 	// whether we want to bind links automatically
+										// or not. This binds .prev and .next
+				'timer'		: false, 	// set a timer if we want one
+				'loop_pages': true, 	// whether to loop the pages
+				'randomize' : false, 	// whether to randomize the next_page method
+				'perspective': "500px", // perspective for card mode.
+				'force_pages': false, 	// forces a certain number of pages.
+										// Useful for partial scrolling
+				'bind_hover': true		// Set to false if you do not want the timer
+										// to halt when the user hovers over the
+										// carousel. Ignored when timer is false.
 			}, opts)
 			this.data("carousel__duration", settings.duration)
 			this.data("carousel__easing", settings.easing)
 			this.data("carousel__loop_pages", settings.loop_pages)
 			this.data("carousel__mode", settings.mode)
 			this.data("carousel__randomize", settings.randomize)
-			this.data("carousel__perspective", settings.perspective)			
+			this.data("carousel__perspective", settings.perspective)
 
 			$.each($(".wrapper > ul > li", this), function(idx, elm) {
 				$(elm).attr("rel", idx+1);
 			})
+
+			if(settings.force_pages) {
+				this.data("carousel__pages", settings.force_pages)
+			} else {
+				this.data("carousel__pages", $(".wrapper > ul > li", this ).length)
+			}
+
 			switch(settings.mode) {
 				case "fade":
 					// fix positioning in fade mode
@@ -219,7 +230,7 @@
 					break;
 				case "slide":
 					this.data("carousel__slidewidth",
-						parseInt($(".wrapper > ul > li:eq(0)", this).css("width"))) 
+						parseInt($(".wrapper > ul > li:eq(0)", this).css("width")))
 					break;
 				case "vslide":
 					this.data("carousel__slideheight",
@@ -241,14 +252,22 @@
 					$.error("Unknown slide mode: \'" + settings.mode + "\'. Defaulting to slide." )
 					settings.mode = "slide"
 					this.data("carousel__slidewidth",
-						parseInt($(".wrapper > ul > li:eq(0)", this).css("width"))) 
-
+						parseInt($(".wrapper > ul > li:eq(0)", this).css("width")))
 			}
 
 
 			if (settings.timer) {
 				this.data("carousel__timer", settings.timer)
 				this.carousel("start_timer")
+				if (settings.bind_hover) {
+					this.hover(function() {
+						// Hover in
+						$(this).carousel("stop_timer")
+					}, function() {
+						// Hover out
+						$(this).carousel("start_timer")
+					})
+				}
 			}
 
 			if ($(".active_page", this).length == 0) {
@@ -259,12 +278,16 @@
 				// bind .prev/next links if any
 				if ($("> .prev", this).length > 0) {
 					$("> .prev", this).click(
-						function() {$(this).parent("div").carousel("prev_page")
+						function(event) {
+							event.preventDefault()
+							$(this).parent("div").carousel("prev_page")
 					})
 				} else { console.log("Cannot bind next (not found)") }
 				if ($("> .next", this).length > 0) {
 					$("> .next", this).click(
-						function() {$(this).parent("div").carousel("next_page")
+						function(event) {
+							event.preventDefault()
+							$(this).parent("div").carousel("next_page")
 					})
 				} else { console.log("Cannot bind next (not found)") }
 			}
@@ -275,12 +298,12 @@
 	$.fn.carousel = function(method) {
 		if ( methods[method] ) {
 			return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
-		} else if ( typeof method === 'object' || ! method ) {
-			return methods.init.apply( this, arguments );
+		} else if (typeof method === 'object' || ! method) {
+			return methods.init.apply(this, arguments);
 		} else {
-			$.error( 'Method ' +  method + ' does not exist in jQuery.carousel' );
+			$.error('Method ' +  method + ' does not exist in jQuery.carousel');
 		}
 
 	// end plugin
 	}
-})( jQuery );
+})(jQuery);
